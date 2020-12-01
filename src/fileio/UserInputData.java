@@ -58,9 +58,13 @@ public final class UserInputData {
         return favoriteMovies;
     }
 
-    public ArrayList<String> getTitlesRated() { return titlesRated; }
+    public ArrayList<String> getTitlesRated() {
+        return titlesRated;
+    }
 
-    public Map<String, ArrayList<Integer>> getSerialsRated() { return serialsRated; }
+    public Map<String, ArrayList<Integer>> getSerialsRated() {
+        return serialsRated;
+    }
 
     @Override
     public String toString() {

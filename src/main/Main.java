@@ -1,7 +1,6 @@
 package main;
 
 import action.Actions;
-import actor.ActorsAwards;
 import checker.Checkstyle;
 import checker.Checker;
 import common.Constants;
@@ -9,14 +8,13 @@ import fileio.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import query.Queries;
-import utils.Utils;
+import recommendation.Recommendations;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -69,6 +67,7 @@ public final class Main {
      * @param filePath2 for output file
      * @throws IOException in case of exceptions to reading / writing
      */
+    @SuppressWarnings("unchecked")
     public static void action(final String filePath1,
                               final String filePath2) throws IOException {
         InputLoader inputLoader = new InputLoader(filePath1);
@@ -143,6 +142,13 @@ public final class Main {
                                     }
                                 }
                             }
+                            default -> {
+                                JSONObject object = fileWriter
+                                        .writeFile(input.getCommands().get(i).getActionId(),
+                                                input.getCommands().get(i).getCriteria(),
+                                                "error");
+                                arrayResult.add(object);
+                            }
                         }
                     }
                 }
@@ -184,6 +190,13 @@ public final class Main {
                                                         input.getCommands().get(i).getFilters()
                                                                 .get(2),
                                                         input.getCommands().get(i).getSortType()));
+                                arrayResult.add(object);
+                            }
+                            default -> {
+                                JSONObject object = fileWriter
+                                        .writeFile(input.getCommands().get(i).getActionId(),
+                                                input.getCommands().get(i).getCriteria(),
+                                                "error");
                                 arrayResult.add(object);
                             }
                         }
@@ -234,6 +247,13 @@ public final class Main {
                                                         input.getCommands().get(i).getNumber()));
                                 arrayResult.add(object);
                             }
+                            default -> {
+                                JSONObject object = fileWriter
+                                        .writeFile(input.getCommands().get(i).getActionId(),
+                                                input.getCommands().get(i).getCriteria(),
+                                                "error");
+                                arrayResult.add(object);
+                            }
                         }
                     }
                     case "shows" -> {
@@ -282,10 +302,139 @@ public final class Main {
                                                         input.getCommands().get(i).getNumber()));
                                 arrayResult.add(object);
                             }
+                            default -> {
+                                JSONObject object = fileWriter
+                                        .writeFile(input.getCommands().get(i).getActionId(),
+                                                input.getCommands().get(i).getCriteria(),
+                                                "error");
+                                arrayResult.add(object);
+                            }
                         }
                     }
                     case "users" -> {
-                        
+                        Queries query = new Queries();
+                        JSONObject object = fileWriter
+                                .writeFile(input.getCommands().get(i).getActionId(),
+                                        input.getCommands().get(i).getCriteria(),
+                                        query.usersMostActive(usersList,
+                                                input.getCommands().get(i).getSortType(),
+                                                input.getCommands().get(i).getNumber()));
+                        arrayResult.add(object);
+                    }
+                    default -> {
+                        JSONObject object = fileWriter
+                                .writeFile(input.getCommands().get(i).getActionId(),
+                                        input.getCommands().get(i).getCriteria(),
+                                        "error");
+                        arrayResult.add(object);
+                    }
+                }
+            }
+            if ("recommendation".equals(input.getCommands().get(i).getActionType())) {
+                switch (input.getCommands().get(i).getType()) {
+                    case "standard" -> {
+                        Recommendations recommendations = new Recommendations();
+                        JSONObject object =
+                                fileWriter.writeFile(input.getCommands().get(i).getActionId(),
+                                        input.getCommands().get(i).getCriteria(),
+                                        recommendations.standard(usersList,
+                                                input.getCommands().get(i).getUsername(),
+                                                moviesList, serialsList));
+                        arrayResult.add(object);
+                    }
+                    case "best_unseen" -> {
+                        Recommendations recommendations = new Recommendations();
+                        JSONObject object =
+                                fileWriter.writeFile(input.getCommands().get(i).getActionId(),
+                                        input.getCommands().get(i).getCriteria(),
+                                        recommendations.bestUnseen(usersList,
+                                                input.getCommands().get(i).getUsername(),
+                                                moviesList, serialsList));
+                        arrayResult.add(object);
+                    }
+                    case "popular" -> {
+                        for (UserInputData userInputData : usersList) {
+                            if (userInputData.getUsername()
+                                    .equals(input.getCommands().get(i).getUsername())) {
+                                if (userInputData.getSubscriptionType().equals("PREMIUM")) {
+                                    Recommendations recommendations = new Recommendations();
+                                    JSONObject object =
+                                            fileWriter.writeFile(
+                                                    input.getCommands().get(i).getActionId(),
+                                                    input.getCommands().get(i).getCriteria(),
+                                                    recommendations
+                                                            .popular(usersList, userInputData,
+                                                                    moviesList, serialsList));
+                                    arrayResult.add(object);
+                                } else {
+                                    JSONObject object =
+                                            fileWriter.writeFile(
+                                                    input.getCommands().get(i).getActionId(),
+                                                    input.getCommands().get(i).getCriteria(),
+                                                    "PopularRecommendation cannot be applied!");
+                                    arrayResult.add(object);
+                                }
+                            }
+                        }
+                    }
+                    case "favorite" -> {
+                        for (UserInputData userInputData : usersList) {
+                            if (userInputData.getUsername()
+                                    .equals(input.getCommands().get(i).getUsername())) {
+                                if (userInputData.getSubscriptionType().equals("PREMIUM")) {
+                                    Recommendations recommendations = new Recommendations();
+                                    JSONObject object =
+                                            fileWriter.writeFile(
+                                                    input.getCommands().get(i).getActionId(),
+                                                    input.getCommands().get(i).getCriteria(),
+                                                    recommendations
+                                                            .favorite(usersList, userInputData,
+                                                                    moviesList, serialsList));
+                                    arrayResult.add(object);
+                                } else {
+                                    JSONObject object =
+                                            fileWriter.writeFile(
+                                                    input.getCommands().get(i).getActionId(),
+                                                    input.getCommands().get(i).getCriteria(),
+                                                    "PopularRecommendation cannot be applied!");
+                                    arrayResult.add(object);
+                                }
+                            }
+                        }
+                    }
+                    case "search" -> {
+                        for (UserInputData userInputData : usersList) {
+                            if (userInputData.getUsername()
+                                    .equals(input.getCommands().get(i).getUsername())) {
+                                if (userInputData.getSubscriptionType().equals("PREMIUM")) {
+                                    Recommendations recommendations = new Recommendations();
+                                    JSONObject object =
+                                            fileWriter.writeFile(
+                                                    input.getCommands().get(i).getActionId(),
+                                                    input.getCommands().get(i).getCriteria(),
+                                                    recommendations
+                                                            .search(userInputData, moviesList,
+                                                                    serialsList,
+                                                                    input.getCommands().get(i)
+                                                                            .getGenre()));
+                                    arrayResult.add(object);
+                                } else {
+                                    JSONObject object =
+                                            fileWriter.writeFile(
+                                                    input.getCommands().get(i).getActionId(),
+                                                    input.getCommands().get(i).getCriteria(),
+                                                    "PopularRecommendation cannot be applied!");
+                                    arrayResult.add(object);
+                                }
+                            }
+                        }
+                    }
+                    default -> {
+                        JSONObject object = fileWriter
+                                .writeFile(input.getCommands().get(i).getActionId(),
+                                        input.getCommands().get(i).getCriteria(),
+                                        "error");
+                        arrayResult.add(object);
                     }
                 }
             }

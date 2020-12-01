@@ -26,7 +26,9 @@ public final class MovieInputData extends ShowInput {
         return duration;
     }
 
-    public ArrayList<Double> getRatings() { return ratings;}
+    public ArrayList<Double> getRatings() {
+        return ratings;
+    }
 
     @Override
     public String toString() {

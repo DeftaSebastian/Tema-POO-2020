@@ -3,7 +3,6 @@ package fileio;
 import entertainment.Season;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Information about a tv show, retrieved from parsing the input test files
@@ -29,7 +28,7 @@ public final class SerialInputData extends ShowInput {
         this.numberOfSeasons = numberOfSeasons;
         this.seasons = seasons;
         this.ratings = new ArrayList<ArrayList<Double>>();
-        for(int i = 0; i < numberOfSeasons; i++){
+        for (int i = 0; i < numberOfSeasons; i++) {
             ArrayList<Double> list = new ArrayList<>();
             ratings.add(list);
         }
@@ -43,7 +42,9 @@ public final class SerialInputData extends ShowInput {
         return seasons;
     }
 
-    public ArrayList<ArrayList<Double>> getRatings() { return ratings; }
+    public ArrayList<ArrayList<Double>> getRatings() {
+        return ratings;
+    }
 
     @Override
     public String toString() {
